@@ -1,0 +1,968 @@
+/*=============2016.04.12.Tu====ver.1.0======*/
+/*===============
+[ecmMo]montgomery 2step
+Input	N 	:composite
+		Ce 	:random ceed
+		B1
+Output	P 	:P | N
+===============*/
+def ecmMo(N, B1, Ce){
+
+	random(Ce);
+	Clear = igcd(N, 6);
+	if(Clear != 1){
+		if(Clear % 2 == 0){
+			return Clear / 2;
+		}else{
+			return Clear / 3;
+		}
+	}
+	B2 = 100 * B1;
+	D = 100;
+
+	for(W=1;W<=10000;W++){
+
+		while(1){
+			H = random() % N;
+			if(H > 6){
+				break;
+			}
+		}
+
+		print([W, H]);
+
+		U = (H^2 - 5) % N;
+		V = 4 * H % N;
+		A = 1;
+		B = 0;
+		Co = ((V - U)^3 * (3 * U + V)) % N;
+		Cu = (4 * U^3 * V) % N;
+		Co2 = (Co - 2 * Cu) % N;
+
+		U3 = U^3 % N;
+		UX = U3 * Cu % N;
+		V3 = V^3 % N;
+
+		A = Cu^2 % N;
+		B = 0;
+		C = Co2;
+
+		Qo = newvect(2, [UX, V3]);
+
+		print([A, B, C]);
+		print(Qo);
+
+		Pl = p_list(B1);
+		Pv = ltov(Pl);
+		L = length(Pl);
+		Ap = newvect(L);
+
+		for(I = 0;I < L;I++){
+			Tem = Pv[I];
+			BB = idiv(B1, Tem);
+			Ap[I] = 1;
+				while(1){
+					BB = idiv(BB, Tem);
+					if(BB == 0){
+						break;
+					}else{
+						Ap[I]++;
+					}
+				}
+			for(J = 0;J < Ap[I]; J++){
+				Qo = mulh(N, A, B, C, Qo, Pv[I]);
+				G = exeuclid(Qo[1], N);
+				Fac = G[2];	
+				if(Fac > 1){
+					print([W, H]);
+					return [Fac, N / Fac, N];
+				}
+				/*print([I, J, Ap, Qo]);*/
+			}
+		}
+		print([W, H]);
+		print(Qo);
+
+		S = newvect(D, []);
+		Be = newvect(D, []);
+		S[0] = doubleh(N, A, B, C, Qo);
+		S[1] = doubleh(N, A, B, C, S[0]);
+		for(Id = 2;Id < D;Id++){
+			S[Id] = addh(N, A, B, C, S[Id-1], S[0], S[Id-2]);
+			Be[Id] = S[Id][0] * S[Id][1] % N; 
+		}
+		G = 1;
+		Bb = B1 - 1;
+		D2 = 2*D;
+
+		T = mulh(N, A, B, C, Qo, Bb - D2);
+		R = mulh(N, A, B, C, Qo, Bb);
+		for(Ir = Bb;Ir < B2; Ir += D2){
+			Ar = R[0] * R[1] % N;
+			for(Iq = Ir + 2;Iq <= Ir + D2;Iq++){
+				if(try_s(Iq) == 0){
+					De = (Iq - Ir) / 2;
+					G = G * ((R[0] - S[De-1][0]) * (R[1] + S[De-1][1]) - Ar + Be[De-1]) % N;
+				}
+			}
+			TT = R;
+			R = addh(N, A, B, C, R, S[D-1], T);
+			T = TT;
+		}
+		/*print(Qo);
+		print(S);
+		print(Be);
+		print([A, B, C]);
+		print([G, Bb, B2, D, D2]);
+		print(T);
+		print(R);
+		print(De);
+		print(Ar);
+		*/
+		print(G);
+		G1 = exeuclid(G, N);
+		G = G1[2];
+		if((G > 1)&&(G < N)){
+			print([W, H]);
+			return [G, N/G, N];
+		}
+		print(Qo);
+		print([A, B, C, G]);
+		print([W, H]);
+	}
+	return N;
+}
+
+/*===============
+[ecmMo1]montgomery 1step
+Input	N 	:composite
+		Ce 	:random ceed
+		B1
+Output	P 	:P | N
+===============*/
+def ecmMo1(N, B1, Ce){
+
+	random(Ce);
+	Clear = igcd(N, 6);
+	if(Clear != 1){
+		if(Clear % 2 == 0){
+			return Clear / 2;
+		}else{
+			return Clear / 3;
+		}
+	}
+	B2 = 100 * B1;
+	D = 100;
+
+	for(W=1;W<=100;W++){
+	
+		while(1){
+			H = random() % N;
+			if(H > 6){
+				break;
+			}
+		}
+
+		print([W, H]);				
+		U = (H^2 - 5) % N;
+		V = 4 * H % N;
+		A = 1;
+		B = 0;
+		Co = ((V - U)^3 * (3 * U + V)) % N;
+		Cu = (4 * U^3 * V) % N;
+		Co2 = (Co - 2 * Cu) % N;
+
+		U3 = U^3 % N;
+		UX = U3 * Cu % N;
+		V3 = V^3 % N;
+
+		A = Cu^2 % N;
+		B = 0;
+		C = Co2;
+
+		Qo = newvect(2, [UX, V3]);
+
+		print([A, B, C]);
+		print(Qo);
+
+		Pl = p_list(B1);
+		Pv = ltov(Pl);
+		L = length(Pl);
+		Ap = newvect(L);
+
+		for(I = 0;I < L;I++){
+			Tem = Pv[I];
+			BB = idiv(B1, Tem);
+			Ap[I] = 1;
+				while(1){
+					BB = idiv(BB, Tem);
+					if(BB == 0){
+						break;
+					}else{
+						Ap[I]++;
+					}
+				}
+			for(J = 0;J < Ap[I]; J++){
+				Qo = mulh(N, A, B, C, Qo, Pv[I]);
+				G = exeuclid(Qo[1], N);
+				Fac = G[2];	
+				if(Fac > 1){
+					print([W, H]);
+					return [Fac, N / Fac, N];
+				}
+			}
+		}
+	}
+	print([W, H]);
+	return 0;
+}
+
+/*===============
+[try_s]
+Input	N 	:composite
+
+Output	1	:composite
+		0 	:prime
+===============*/
+def try_s(N){
+	
+	for(I = 2;I <= isqrt(N) + 1;I++){
+		if(N % I == 0){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/*===============test
+[ecm]
+Input	N 	:composite
+		Ce 	:random ceed
+		B1	:first stage upper bound
+Output	P 	:P | N
+===============*/
+def ecm(N, B1, Ce){
+	random(Ce);
+	Clear = igcd(N, 6);
+	if(Clear != 1){
+		if(Clear % 2 == 0){
+			return Clear / 2;
+		}else{
+			return Clear / 3;
+		}
+	}
+for(W=1;W<=Ce;W++){
+	print(W);
+	G = N;
+	while(G == N){
+		A = random() % N;
+		X = random() % N;
+		Y = random() % N;
+		B = (Y^2 - X^3 - A*X) % N;
+
+		D = descr(A, B, 0);
+		G = igcd(N, D);
+
+		if((G > 1) && (G < N)){
+			return G;
+		}
+	}
+
+	Po = newvect(3, [X, Y, 1]);
+
+	print([A, B, Po]);
+	
+	Pl = p_list(B1);
+	Pv = ltov(Pl);
+	L = length(Pl);
+	Ap = newvect(L);
+
+	for(I = 0;I < L;I++){
+		Tem = Pv[I];
+		BB = idiv(B1, Tem);
+		Ap[I] = 1;
+		while(1){
+			BB = idiv(BB, Tem);
+			if(BB == 0){
+				break;
+			}else{
+				Ap[I]++;
+			}
+		}
+		for(J = 0;J < Ap[I]; J++){
+			An = mulAf(N, A, Po, Pv[I]);
+			Po = An[0];
+			Fac = An[1];	
+			if(Fac > 1){
+				print(W);
+				print(Ap);
+				return [Fac, N / Fac];
+			}
+		}
+	}
+	B2 = 8 * B1;
+
+
+
+
+
+	print(W);
+}
+
+	return N;
+}
+/*============
+[facl]
+Input	M 	:integer
+		B 	:upper bounder of prime
+Output		:factors of M
+=============*/
+
+def facl(M, B){
+	
+	N = M;
+	L = p_list(B);
+	Le = length(L);
+	V = ltov(L);
+	R = [];
+	for(I = 0;I < Le;I++){
+		X = newvect(2, [V[I], 0]);
+		Count = 0;
+		while(N % V[I] == 0){
+			Count++;
+			N /= V[I];
+
+		}
+		if(Count >= 1){
+			X[1] = Count;
+			R = cons(X, R);
+		}	
+	}
+	return reverse(R);
+	
+	
+}
+/*===============
+[ec_ord]
+Input	P	:prime number more than 5
+		A,B	:in Fp. 4A^3+27B^2!=0 mod P
+Output	C 	:order of Eab(F_p)
+===============*/
+def ec_ord(P, A, B, C){
+	E = P + 1;
+	S = 0;
+	for(X = 0;X < P;X++){
+		Ec = X^3 + C * X^2 + A * X + B;
+		Ep = Ec % P;
+		S += jsymbol(Ep, P);
+	}
+	return E + S;
+}
+/*===============
+[ec_ord2]
+Input	P	:prime number more than 5
+		F	:in Fp
+Output	C 	:order of Eab(F_p)
+===============*/
+def ec_ord2(P, F){
+
+	if((F % P == 0)||(F % P == 1)||(F % P == 5)){
+			return -1;
+	}
+	F = F % P;
+	E = P + 1;
+	S = 0;
+	U = (F^2 - 5) % P;
+	V = 4 * F % P;
+	C = ((U - V)^3 * (3 * U + V) / (4 * U^3 * V) - 2) % P;
+
+	print([U, V, C]);
+
+	for(X = 0;X < P;X++){
+		Ec = X^3 + C * X^2 + X;
+		Ep = Ec % P;
+		S += jsymbol(Ep, P);
+	}
+	return E + S;
+}
+/*===============
+[sqrt_ecp]
+Input	P		:prime number more than 5
+		A,B,C	:in Fp
+Output	X
+		Y 		:Y^2=X^3+Cx^2+Ax+B
+		P1=43;Q1=53;N=P1*Q1;B1=10;Ce=100;A=B=1;
+===============*/
+def sqrt_ecp(P, A, B, C){
+	
+	random();
+	S = 0;
+	while(1){
+		X = random() % P;
+		Y2 = (X^3 + C * X^2 + A * X + B) % P;
+		S = jsymbol(Y2, P);
+		if(S == 1){
+			break;
+		}
+	}
+	return newvect(2, [X, sqrt_p(Y2, P)]);
+}	
+/*=2016.7.16==============================
+¥¥operations¥¥
+Input
+	P		:prime number more than 5
+	A,B, C :in Fp. 4A^3+27B^2!=0 mod P
+	Po1		:Po[X1, Y1, Z1]
+	Po2		:Po[X2, Y2, Z2]
+	Pom		:Po1 - Po2
+	M		:non-negative integer
+Output
+	addh(Po1, Po2, Pom)	:[Xp, Zp] of
+	doubleh(Po1)		:[Xp, Zp] 
+	mulh(Po1, M)	:[Xm, Zm] of [m]Po1
+
+	Po1=[X1, Y1, Z1]
+	Po2=[X2, Y2, Z2]
+	Pop=[Xp, Yp, Zp]
+	Pom=[Xm, Ym, Zm]
+	Xp = Zm((X1*X2 - A*Z1*Z2)^2-4*B*Z1*Z2*(X1*Z2+X2*Z1+C*Z1*Z2));
+	Zp =Xm*(X1*Z2-X2*Z1)^2;
+	gy^2=x^3+Cx^2+Ax+B
+===============================*/
+
+def addh(P, A, B, C, Po1, Po2, Pom){
+		
+	L1 = length(Po1);
+
+	if(L1 == 3){
+		X1 = Po1[0];
+		Y1 = Po1[1];
+		Z1 = Po1[2];
+		}
+	if(L1 == 2){
+		X1 = Po1[0];
+		Z1 = Po1[1];
+	}
+
+	L2 = length(Po2);
+
+	if(L2 == 3){
+		X2 = Po2[0];
+		Y2 = Po2[1];
+		Z2 = Po2[2];
+		}
+	if(L2 == 2){
+		X2 = Po2[0];
+		Z2 = Po2[1];
+	}
+
+	Lm = length(Pom);
+
+	if(Lm == 3){
+		Xm = Pom[0];
+		Ym = Pom[1];
+		Zm = Pom[2];
+		}
+	if(Lm == 2){
+		Xm = Pom[0];
+		Zm = Pom[1];
+	}
+
+	
+	Xp = Zm*((X1*X2 - A*Z1*Z2)^2-4*B*Z1*Z2*(X1*Z2+X2*Z1+C*Z1*Z2));
+	Zp =Xm*(X1*Z2-X2*Z1)^2;
+
+	Xp = Xp % P;
+	Zp = Zp % P;
+
+	return newvect(2, [Xp, Zp]);
+}
+
+def doubleh(P, A, B, C, Po1){
+	
+	L = length(Po1);
+
+	if(L == 3){
+		X1 = Po1[0];
+		Y1 = Po1[1];
+		Z1 = Po1[2];
+		}
+	if(L == 2){
+		X1 = Po1[0];
+		Z1 = Po1[1];
+	}
+
+	X12 = X1^2;
+	Z12 = Z1^2;
+
+	Xp = (X12 - A*Z12)^2 - 4*B*(2*X1 + C*Z1)*Z1^3;
+	Zp1 = Z1 * X1 * (X12 + C*X1*Z1 + A*Z12) + 4*B*Z1^4;
+	Zp = ishift(Zp1, -2);
+
+	Xp = Xp % P;
+	Zp = Zp % P;
+
+	return newvect(2, [Xp, Zp]);
+
+}
+
+def mulh(P, A, B, C, Po1, M){
+
+	L1 = length(Po1);
+
+	if(L1 == 3){
+		X1 = Po1[0];
+		Y1 = Po1[1];
+		Z1 = Po1[2];
+		}
+	if(L1 == 2){
+		X1 = Po1[0];
+		Z1 = Po1[1];
+	}
+
+	if(M==0)return newvect(2, [0, 1, 0]);
+	if(M==1)return newvect(2, [X1, Z1]);
+	if(M==2)return doubleh(P, A, B, C, Po1);
+
+	U = X1;
+	V = Z1;
+	Po2 = newvect(2, [U, V]);
+
+	Po3 = doubleh(P, A, B, C, Po1);
+
+	Mb = binaryl(M);
+	Ml = length(Mb);
+	Mv = ltov(Mb);
+
+
+	I = 1;
+	while(I <= Ml - 2){
+		if(Mv[I] == 1){
+			Po2 = addh(P, A, B, C, Po3, Po2, Po1);
+			Po3 = doubleh(P, A, B, C, Po3);
+		}else{
+			Po3 = addh(P, A, B, C, Po2, Po3, Po1);
+			Po2 = doubleh(P, A, B, C, Po2);
+		}		
+		I++;
+	}
+	if(Mv[I] == 1)return addh(P, A, B, C, Po2, Po3, Po1);
+	return doubleh(P, A, B, C, Po2);
+}
+
+def descr(A, B, C){
+	
+	return 4*A^3+27*B^2-18*A*B*C-A^2*C^2+4*B*C^3;
+
+}
+
+/*=2016.04.26==============================
+¥¥operations¥¥
+Input
+	P	:prime number more than 5
+	A,B	:in Fp. 4A^3+27B^2!=0 mod P
+	Po	:in E(A,B)_Fp. Po[X Y 1]
+	M	:non-negative integer
+Output
+	doubleAf(P, A, Po)		:[2]Po
+	addAf(P, A, Po1, Po2)	:Po1 + Po2
+	mulAf(P, A, Po, M)		:[m]Po
+
+
+===============================*/	
+def negAf(P, Po){
+
+	X = Po[0];
+	Y = -Po[1] + P;
+	Z = Po[2];
+	return [X, Y, Z];
+}
+
+def doubleAf(P, A, Po){
+
+	return addAf(P, A, Po, Po);
+}
+
+def subAf(P, A, Po1, Po2){
+
+	return addAf(P, A, Po1, negAf(P, Po2));
+}
+
+def addAf(P, A, Po1, Po2)
+{
+
+	X1 = Po1[0];
+	Y1 = Po1[1];
+	Z1 = Po1[2];
+
+	X2 = Po2[0];
+	Y2 = Po2[1];
+	Z2 = Po2[2];
+
+	if(Z1 == 0){
+		return [Po2, 1];
+	}
+	if(Z2 == 0){
+		return [Po1, 1];
+	}
+	if(X1 == X2){
+		
+		if((Y1 + Y2) % P == 0){
+			return [[0, 1, 0], 1];
+		}
+		YY = 2 * Y1;
+		G = exeuclid(P, YY);
+		M = ((3 * X1^2 + A) * G[1]) % P;
+	}else{
+		XX = (X2 - X1) % P;
+		G = exeuclid(P, XX);
+		M = ((Y2 - Y1) * G[1]) % P;
+	}
+
+	X3 = (M^2 - X1 -X2) % P;
+	Y3 = (M * (X1 - X3) - Y1) % P;
+
+	return [[X3, Y3, 1], G[2]];
+}
+
+def mulAf(P, A, Po, M){
+
+	if(M == 0){
+		return [[0, 1, 0], 1];
+	}
+	Poq = newvect(3);
+	for(I = 0;I < 3;I++){
+		Poq[I] = Po[I];
+	}
+
+	ML = binaryl(M);
+	K = length(ML);
+	
+	M3 = M * 3;
+	M3L = binaryl(M3);
+	L = length(M3L);
+
+	for(I = 0;I < L-K;I++){
+		ML = cons(0, ML);
+	}
+
+	for(J = 1;J <= L-2;J++){
+		Pod = doubleAf(P, A, Poq);
+		Poq = Pod[0];
+		In = Pod[1];
+		if(In != 1){
+			return [Poq, In];
+		}
+		if(ML[J] == 0 && M3L[J] == 1){
+			Poa = addAf(P, A, Poq, Po); 
+			Poq = Poa[0];
+			In = Poa[1];	
+		}else if(ML[J] == 1 && M3L[J] == 0){
+			Pos = subAf(P, A, Poq, Po);
+			Poq = Pos[0];
+			In = Pos[1];
+		}
+	}	
+	return [Poq, In];
+}
+
+
+
+/*===============================
+[ptoa]2016.03.10
+Input 	Po  :Ratinal Point in E(Fp)[Projective]
+		P   :prime number
+Output	Po 	:Afine
+[p_list]
+Input	X	:integer
+Output	L 	:list of prime less than X
+===============================*/
+def ptoa(P, Po){
+	X = Po[0];
+	Y = Po[1];
+	Z = Po[2];
+
+	G1 = exeuclid(Z^2, P);
+	G2 = exeuclid(Z^3, P);
+	GX = G1[0];
+	GY = G2[0];
+
+	XX = X * GX % P;
+	YY = Y * GY % P;
+
+	return newvect(2, [XX, YY]);	
+}
+
+def p_list(X){
+		L = [2];
+		I = 1;
+		while(prime(I) <= X){
+			L = cons(prime(I), L);
+			I++;
+		} 
+	Lr = reverse(L);
+	return Lr;
+}
+/*===============================
+[dton]2016.07.11
+Input	L	:2digits list
+Output	N	:noraml N
+===============================*/
+def dton(L){
+	N = 0;
+	Lr =reverse(L);
+	V = ltov(Lr);
+	Le = length(L);
+	X = 1;
+	for(I = 0;I < Le;I++){
+		N += V[I] * X;
+		X *= 2;
+	}
+	return N;
+}
+
+/*===============================
+[l_chain]2016.07.11
+Input	N	:positive integer
+Output	L	:route to N from [0, 1]
+===============================*/
+def l_chain(N){
+	L=[[0, 1]];
+	A = 0;
+	B = 1;
+	Bi = binaryl(N);
+	Bv = ltov(Bi);
+	Bl = length(Bi);
+	for(I = 0;I < Bl;I++){
+		if(Bv[I]==1){
+			A = A + B;
+			B = 2*B;
+		}else{
+			B = A + B;
+			A = 2 * A;
+		}
+		L = cons([A, B], L);
+	}
+	return reverse(L);
+}
+/*===============================
+[findPo]
+Input	P 	:prime number more than 5
+		A,B :in Fp. 4A^3+27B^2!=0 mod P
+		Ceed:nutural number
+Output 	Pop	:in E(A,B)-Fp. Pop[X Y Z]
+
+[jsymbol]
+Input	A	:integer
+		M	:odd natural number
+Output (A/M):Jacobi symbol
+
+[sqrt_p]
+Input	P	:odd prime number
+		L	:in Fp, (L/P)=1
+Output
+		X	:X^2=L(mod P)
+[powm]
+Input	M,E	:non-negative integer
+		N	:nturarl number
+Output 	A^M (mod N)
+
+[exeuclid]
+Input	X,Y :non-negative integers
+Output	[A,B,G]: A*X+B*Y=G
+
+[binaryl]
+Input	N	:non-negative integer
+Output	N	:binary digits of N
+===============================*/
+def findPo(P, A, B, Ceed){
+
+	random(Ceed);
+
+	while(1){
+		X = random() % P;
+		T = (X^3 + A*X + B) % P;
+
+		if(jsymbol(T, P) == 1){
+			break;
+		}
+	}
+
+	Y = sqrt_p(T, P) % P;
+	return newvect(3, [X, Y, 1]);	
+}
+
+def jsymbol(A, M){
+
+	A = A % M;
+	T = 1;
+
+	while(A != 0){
+		while(A % 2 == 0){
+			A = A / 2;
+			if((M % 8 == 3)||(M % 8 == 5)){
+				T = -T;
+			}
+		}
+		S = A;
+		A = M;
+		M = S;
+		if((A % 4 == 3)&&(M % 4 == 3)){
+			T = -T;
+		}
+		A = A % M;
+	}
+	if(M == 1){
+		return T;
+	}
+	return 0;
+}
+
+def sqrt_p(L, P){
+
+	L = L % P;
+	if(P % 4 == 3){
+		X = powm(L, (P+1)/4, P);
+		return X;
+	}
+
+	if(P % 8 == 5){
+		X = powm(L, (P+3)/8, P);
+		C = powm(X, 2, P);
+		if(C % P != L)
+			{X = X * ishift(2, 1-(P-1)/4) % P;
+		}
+	return X;
+	}
+
+	if(P % 8 == 1){
+
+	/*find D0 in [2, P-1], s,t, (D0/P) = -1 */
+
+		for(I = 2;I <= P-1;I++){
+			if(jsymbol(I, P) == -1){
+				D0 = I;
+				break;
+			}
+		}
+
+	/*compute:S,T  such that P-1=2^S*T (T is odd number)*/
+
+		S = 0;
+		T = P - 1;
+		while(T % 2 == 0){
+			S++;
+			T = T/2;
+		}
+
+		A = powm(L, T, P);
+		D = powm(D0, T, P);
+		M = O;
+
+		for(I = 1;I < S;I++){
+
+			if(powm((A*D^M), ishift(2, 2-S+I), P) == P-1){
+				M = M + 2^I;
+			}
+		}
+
+		X = (powm(L, (T+1)/2, P)*powm(D, M/2, P)) % P;
+		return X;
+	}
+}
+
+def powm(M, E, N){
+
+	if(M<0 || ((E<0)||(N<0))){
+		error("M < 0 or( E < 0 or N < 0)");
+	}
+
+	if(E == 0){
+		return 1;
+	}
+
+	C = M;	/*E>=1*/
+	
+	K = p_mag(E);	/*bit length of E*/
+	E_T = ishift(1, -K+2);
+
+	for(T = K-1;T>0;T--){
+		C = C^2 % N;
+
+		if(iand(E, E_T) == E_T){
+			C = C * M % N;
+		}
+		E_T = ishift(E_T, 1);
+	}
+
+	return C % N;
+}
+
+def exeuclid(X, Y){
+
+	if(X<0||Y<0){error("X < 0 || Y < 0");}
+
+	Flag=0;
+	if(X<Y){
+		T=X;
+		X=Y;
+		Y=T;
+		Flag=1;
+	}
+
+	R0=X;
+	R1=Y;
+	A0=1;
+	A1=0;
+	B0=0;
+	B1=1;
+
+	while(R1>0){
+		Q1=idiv(R0, R1);
+		R2=R0%R1;
+
+		A2=A0-Q1*A1;
+		B2=B0-Q1*B1;
+
+		R0=R1;
+		R1=R2;
+
+		A0=A1;
+		A1=A2;
+
+		B0=B1;
+		B1=B2;
+	}
+	G=R0;
+	A=A0;
+	B=B0;
+	if(Flag==0){
+		return [A, B, G];
+	}else{
+		return [B, A, G];
+	}
+}
+
+def binaryl(N)
+{
+	L = [];
+	if(N == 0){
+		return [0];
+	}
+
+
+	if(N < 0){
+		error("binaryl :N < 0");
+	}
+	while(N != 0){
+		if(iand(N, 1) == 1){
+			L = cons(1, L);
+		}else{
+		L = cons(0, L);
+		}
+		N = ishift(N, 1);
+	}
+	return L;
+}
+
+end$
