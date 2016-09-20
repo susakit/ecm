@@ -37,17 +37,20 @@ def ecmMo(N, B1, Ce){
 		B = 0;
 		Co = ((V - U)^3 * (3 * U + V)) % N;
 		Cu = (4 * U^3 * V) % N;
-		Co2 = (Co - 2 * Cu) % N;
+		Cui = exeuclid(Cu, N);
+		if(Cui[2]!=1){
+			return Cui[2];
+		}
+		Cu2 = Cui[0];
 
 		U3 = U^3 % N;
-		UX = U3 * Cu % N;
 		V3 = V^3 % N;
 
-		A = Cu^2 % N;
+		A = 1;
 		B = 0;
-		C = Co2;
+		C = (Co * Cu2 -2) % N;
 
-		Qo = newvect(2, [UX, V3]);
+		Qo = newvect(2, [U3, V3]);
 
 		print([A, B, C]);
 		print(Qo);
